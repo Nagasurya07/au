@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Photo Reader Web App</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+</head>
+<body>
+  <div class="theme-toggle" id="themeToggle" title="Toggle light/dark">🌓</div>
+  <div class="hud" id="hud">
+    <div><strong>FPS:</strong> <span id="fpsVal">--</span></div>
+    <div><strong>Process:</strong> <span id="procTime">--</span></div>
+    <div><strong>Status:</strong> <span id="statusText">Idle</span></div>
+    <div id="memLine" style="display:none;"><strong>Memory:</strong> <span id="memVal">--</span></div>
+  </div>
+  <div class="container glass">
+    <h1>📖 Photo Reader <span class="badge">OCR+</span></h1>
+    <p class="subtitle">Smart OCR with live rendering metrics & immersive reading</p>
+
+    <input type="file" id="imageUpload" accept="image/*" hidden>
+    <div id="dropZone" class="drop-zone">
+      <p>📷 Drag & Drop an image here or <label for="imageUpload" class="file-label">browse</label></p>
+      <img id="preview" alt="preview" />
+    </div>
+
+    <div class="controls-row">
+      <button id="analyzeBtn" class="primary">🔍 Analyze & Extract</button>
+      <button id="readBtn" disabled>🔊 Read</button>
+      <button id="pauseBtn" disabled>⏸ Pause</button>
+      <button id="copyBtn" disabled>📋 Copy</button>
+      <button id="downloadBtn" disabled>💾 Save</button>
+    </div>
+
+    <div class="voice-bar">
+      <label class="v-label">Voice
+        <select id="voiceSelect" aria-label="Voice selection"></select>
+      </label>
+      <label class="v-label small">Speed
+        <input type="range" id="rateRange" min="0.5" max="1.5" step="0.05" value="1" />
+        <span id="rateVal">1.00×</span>
+      </label>
+      <label class="v-label small toggle">
+        <input type="checkbox" id="highlightToggle" checked /> Highlight
+      </label>
+      <label class="v-label small toggle">
+        <input type="checkbox" id="mentorToggle" /> Mentor Mode
+      </label>
+      <button id="reframeBtn" class="mini" disabled title="Reframe extracted text into concise mentor-style principles">🧭 Reframe</button>
+      <label class="v-label small toggle">
+        <input type="checkbox" id="boxesToggle" /> Boxes
+      </label>
+      <label class="v-label small toggle">
+        <input type="checkbox" id="minimalToggle" /> Minimal
+      </label>
+    </div>
+
+    <div class="progress-wrapper">
+      <div class="progress-ring" id="progressRing" data-progress="0">
+        <div class="pr-inner"><span id="progressPercent">0%</span></div>
+      </div>
+      <div class="status-stack">
+        <div class="status-line" id="stageLoad">Load Image</div>
+        <div class="status-line" id="stageDetect">Detect Text Regions</div>
+        <div class="status-line" id="stageRecognize">Recognize Glyphs</div>
+        <div class="status-line" id="stageAssemble">Assemble Text</div>
+      </div>
+    </div>
+
+    <div id="statsBar" class="stats-bar" aria-live="polite">
+      <span id="wordCount">0 words</span>
+      <span id="readTime">0s</span>
+      <span id="clarityBadge" class="clarity clarity-na">Clarity: –</span>
+    </div>
+
+    <div id="output" class="output" aria-live="polite"></div>
+  </div>
+  <canvas id="bgfx" class="bgfx" aria-hidden="true"></canvas>
+  <div class="corner-credit">Render HUD & UI FX Demo</div>
+  <div id="snackbar" class="snackbar" role="status" aria-live="polite"></div>
+  
+  <script src="script.js"></script>
+  <script>
+    if('serviceWorker' in navigator){
+      window.addEventListener('load',()=>{
+        navigator.serviceWorker.register('sw.js').catch(e=>console.warn('SW fail',e));
+      });
+    }
+  </script>
+</body>
+</html>
